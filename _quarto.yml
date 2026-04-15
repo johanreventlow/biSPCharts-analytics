@@ -1,0 +1,18 @@
+project:
+  type: website
+
+format:
+  dashboard:
+    theme: cosmo
+    nav-buttons:
+      - icon: github
+        href: https://github.com/johanreventlow/biSPCharts-analytics
+    orientation: rows
+
+website:
+  title: "biSPCharts Analytics"
+
+execute:
+  echo: false
+  warning: false
+  message: false
