@@ -1,0 +1,4 @@
+# Posit Connect Cloud credentials
+# Kopiér til .Renviron og udfyld med rigtige vaerdier
+CONNECT_SERVER=https://your-connect-cloud-url.posit.cloud
+CONNECT_API_KEY=your-api-key-here

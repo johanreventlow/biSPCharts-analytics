@@ -1,0 +1,17 @@
+# R
+.Rproj.user
+.Rhistory
+.RData
+.Renviron
+renv/library/
+renv/staging/
+
+# Quarto
+_site/
+.quarto/
+
+# OS
+.DS_Store
+
+# Superpowers
+.superpowers/
