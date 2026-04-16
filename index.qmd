@@ -1,0 +1,172 @@
+---
+title: "biSPCharts Analytics"
+format: dashboard
+---
+
+```{r}
+#| label: setup
+#| include: false
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(pins)
+library(scales)
+library(tidyr)
+
+# Indlaes alle R-filer
+for (f in list.files("R", pattern = "\\.R$", full.names = TRUE)) {
+  source(f)
+}
+
+# Indlaes data
+data <- load_analytics_data()
+client_meta <- extract_client_metadata(data$inputs)
+perf_metrics <- extract_performance_metrics(data$inputs)
+kpis <- calculate_overview_kpis(data$sessions, data$inputs, client_meta)
+```
+
+# Overblik
+
+## Row {height=20%}
+
+```{r}
+#| content: valuebox
+#| title: "Sessions denne uge"
+list(
+  value = kpis$sessions_count,
+  icon = "bar-chart",
+  color = "primary"
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Unikke besogende"
+list(
+  value = ifelse(is.na(kpis$unique_visitors), "—", kpis$unique_visitors),
+  icon = "people",
+  color = "info"
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Completion rate"
+list(
+  value = ifelse(is.na(kpis$completion_rate), "—", paste0(kpis$completion_rate, "%")),
+  icon = "check-circle",
+  color = ifelse(!is.na(kpis$completion_rate) && kpis$completion_rate >= 50, "success", "warning")
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Gns. varighed"
+list(
+  value = ifelse(is.na(kpis$median_duration_min), "—", paste0(kpis$median_duration_min, " min")),
+  icon = "clock",
+  color = "secondary"
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Top indikator"
+list(
+  value = kpis$top_indicator,
+  icon = "star"
+)
+```
+
+```{r}
+#| content: valuebox
+#| title: "Trend (uge/uge)"
+trend_label <- if (is.na(kpis$trend_pct)) "—" else paste0(
+  ifelse(kpis$trend_pct >= 0, "+", ""), kpis$trend_pct, "%"
+)
+list(
+  value = trend_label,
+  icon = ifelse(!is.na(kpis$trend_pct) && kpis$trend_pct >= 0, "arrow-up", "arrow-down"),
+  color = ifelse(!is.na(kpis$trend_pct) && kpis$trend_pct >= 0, "success", "danger")
+)
+```
+
+## Row {height=40%}
+
+### Column {width=60%}
+
+```{r}
+#| title: "Sessions per dag"
+plot_sessions_over_time(data$sessions)
+```
+
+### Column {width=40%}
+
+```{r}
+#| title: "Top 10 indikatorer"
+plot_top_indicators(data$inputs)
+```
+
+## Row {height=40%}
+
+```{r}
+#| title: "Wizard-flow"
+plot_wizard_funnel(data$sessions, data$inputs)
+```
+
+# Teknisk
+
+## Row {height=50%}
+
+### Column {width=60%}
+
+```{r}
+#| title: "Feature-brug"
+plot_feature_usage(data$inputs)
+```
+
+### Column {width=40%}
+
+```{r}
+#| title: "Wizard-flow (frafald)"
+plot_wizard_funnel_detailed(data$sessions, data$inputs)
+```
+
+## Row {height=50%}
+
+### Column {width=50%}
+
+```{r}
+#| title: "Fejl-oversigt"
+plot_error_overview(data$errors)
+```
+
+### Column {width=50%}
+
+```{r}
+#| title: "Performance"
+plot_performance(perf_metrics)
+```
+
+## Row {height=50%}
+
+### Column {width=33%}
+
+```{r}
+#| title: "Browser/OS"
+plot_browser_os(client_meta)
+```
+
+### Column {width=33%}
+
+```{r}
+#| title: "Nye vs. tilbagevendende"
+plot_returning_visitors(data$sessions, client_meta)
+```
+
+### Column {width=34%}
+
+```{r}
+#| title: "Tidsmoenstre"
+plot_time_patterns(data$sessions)
+```
