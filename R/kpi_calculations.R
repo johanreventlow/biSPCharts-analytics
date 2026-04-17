@@ -20,11 +20,15 @@ calculate_overview_kpis <- function(sessions, inputs, client_meta, days = 7) {
     ))
   }
 
-  # Parse tidsstempler
+  # Parse tidsstempler + beregn varighed (shinylogs gemmer ikke session_duration,
+  # saa vi beregner fra server_connected/server_disconnected)
   sessions <- sessions |>
     dplyr::mutate(
       connected = lubridate::ymd_hms(.data$server_connected, quiet = TRUE),
-      disconnected = lubridate::ymd_hms(.data$server_disconnected, quiet = TRUE)
+      disconnected = lubridate::ymd_hms(.data$server_disconnected, quiet = TRUE),
+      session_duration = as.numeric(
+        difftime(.data$disconnected, .data$connected, units = "secs")
+      )
     )
 
   cutoff <- lubridate::now() - lubridate::days(days)
@@ -41,10 +45,10 @@ calculate_overview_kpis <- function(sessions, inputs, client_meta, days = 7) {
   }
 
   # Completion rate: sessions der har et spc_plot output
-  sessions_with_plot <- if (nrow(inputs) > 0) {
+  sessions_with_plot <- if (nrow(inputs) > 0 && "sessionid" %in% names(inputs)) {
     chart_sessions <- inputs |>
       dplyr::filter(.data$name == "chart_type") |>
-      dplyr::pull(.data$session) |>
+      dplyr::pull(.data$sessionid) |>
       unique()
     length(chart_sessions)
   } else {
@@ -57,7 +61,7 @@ calculate_overview_kpis <- function(sessions, inputs, client_meta, days = 7) {
   }
 
   # Median session-varighed
-  median_duration_min <- if ("session_duration" %in% names(recent) && nrow(recent) > 0) {
+  median_duration_min <- if (nrow(recent) > 0 && any(!is.na(recent$session_duration))) {
     round(stats::median(recent$session_duration, na.rm = TRUE) / 60, 1)
   } else {
     NA_real_

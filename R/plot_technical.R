@@ -34,13 +34,13 @@ plot_wizard_funnel_detailed <- function(sessions, inputs) {
   if (total == 0) return(.empty_plot("Ingen data"))
 
   upload_count <- total
-  analyser_count <- if (nrow(inputs) > 0) {
+  analyser_count <- if (nrow(inputs) > 0 && "sessionid" %in% names(inputs)) {
     inputs |> dplyr::filter(.data$name == "chart_type") |>
-      dplyr::pull(.data$session) |> dplyr::n_distinct()
+      dplyr::pull(.data$sessionid) |> dplyr::n_distinct()
   } else 0L
-  eksport_count <- if (nrow(inputs) > 0) {
+  eksport_count <- if (nrow(inputs) > 0 && "sessionid" %in% names(inputs)) {
     inputs |> dplyr::filter(grepl("export", .data$name, fixed = TRUE)) |>
-      dplyr::pull(.data$session) |> dplyr::n_distinct()
+      dplyr::pull(.data$sessionid) |> dplyr::n_distinct()
   } else 0L
 
   funnel <- data.frame(

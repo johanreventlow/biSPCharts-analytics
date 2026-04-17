@@ -44,11 +44,13 @@ plot_top_indicators <- function(inputs) {
   indicators <- inputs |>
     dplyr::filter(.data$name == "indicator_title", nchar(.data$value) > 0) |>
     dplyr::count(.data$value, sort = TRUE, name = "antal") |>
-    dplyr::slice_head(n = 10) |>
-    dplyr::mutate(value = stats::reorder(.data$value, .data$antal))
+    dplyr::slice_head(n = 10)
 
   if (nrow(indicators) == 0) return(ggplot2::ggplot() + ggplot2::theme_void() +
     ggplot2::annotate("text", x = 0.5, y = 0.5, label = "Ingen indikatorer registreret", size = 5, color = "grey60"))
+
+  indicators <- indicators |>
+    dplyr::mutate(value = stats::reorder(.data$value, .data$antal))
 
   ggplot2::ggplot(indicators, ggplot2::aes(x = .data$antal, y = .data$value)) +
     ggplot2::geom_col(fill = "#27ae60") +
@@ -68,13 +70,13 @@ plot_wizard_funnel <- function(sessions, inputs) {
 
   # Upload = alle sessions, Analyser = sessions med chart_type, Eksport = sessions med export format
   upload_count <- total
-  analyser_count <- if (nrow(inputs) > 0) {
+  analyser_count <- if (nrow(inputs) > 0 && "sessionid" %in% names(inputs)) {
     inputs |> dplyr::filter(.data$name == "chart_type") |>
-      dplyr::pull(.data$session) |> dplyr::n_distinct()
+      dplyr::pull(.data$sessionid) |> dplyr::n_distinct()
   } else 0L
-  eksport_count <- if (nrow(inputs) > 0) {
+  eksport_count <- if (nrow(inputs) > 0 && "sessionid" %in% names(inputs)) {
     inputs |> dplyr::filter(grepl("export", .data$name, fixed = TRUE)) |>
-      dplyr::pull(.data$session) |> dplyr::n_distinct()
+      dplyr::pull(.data$sessionid) |> dplyr::n_distinct()
   } else 0L
 
   funnel <- data.frame(
