@@ -1,59 +1,101 @@
 # R/data_load.R
-# Indlaes analytics-data fra Connect Cloud pin
+# Indlaes analytics-data fra privat GitHub repo (append-model).
 
-#' Indlaes analytics-data fra pin
+#' Tom default-struktur for analytics-data
 #'
-#' Laeser "spc-analytics-logs" pin fra Connect Cloud.
-#' Returnerer tom default-struktur hvis pin ikke er tilgaengelig.
-#'
-#' @return Navngivet liste med sessions, inputs, outputs, errors data.frames
-load_analytics_data <- function() {
-  default_data <- list(
+#' @return Navngivet liste med 4 tomme data.frames
+default_analytics_data <- function() {
+  list(
     sessions = data.frame(),
     inputs = data.frame(),
     outputs = data.frame(),
     errors = data.frame()
   )
+}
 
-  tryCatch({
-    if (nchar(Sys.getenv("CONNECT_SERVER")) == 0) {
-      message("CONNECT_SERVER ikke sat — bruger tom data")
-      return(default_data)
-    }
+#' Bind alle per-session .rds-filer til aggregeret liste
+#'
+#' Laeser hver .rds-fil i mappen, sammensaetter per kategori via
+#' dplyr::bind_rows(). Ugyldige filer springes over med warning.
+#'
+#' @param sessions_dir Sti til sessions-mappe
+#' @return Navngivet liste med 4 data.frames (sessions, inputs, outputs, errors)
+bind_session_rds_files <- function(sessions_dir) {
+  if (!dir.exists(sessions_dir)) return(default_analytics_data())
 
-    board <- pins::board_connect()
-    pin_data <- pins::pin_read(board, "spc-analytics-logs")
+  rds_files <- list.files(sessions_dir, pattern = "\\.rds$", full.names = TRUE)
+  if (length(rds_files) == 0) return(default_analytics_data())
 
-    # Valider struktur
-    if (!is.list(pin_data)) return(default_data)
-
-    # Sikr at alle 4 kategorier er til stede
-    for (cat in c("sessions", "inputs", "outputs", "errors")) {
-      if (is.null(pin_data[[cat]])) {
-        pin_data[[cat]] <- data.frame()
-      }
-    }
-
-    pin_data
-  }, error = function(e) {
-    message(paste("Kunne ikke laese analytics pin:", e$message))
-    default_data
+  parsed <- lapply(rds_files, function(f) {
+    tryCatch(readRDS(f), error = function(e) {
+      message(paste("Kunne ikke laese", basename(f), "-", e$message))
+      NULL
+    })
   })
+  parsed <- Filter(Negate(is.null), parsed)
+  if (length(parsed) == 0) return(default_analytics_data())
+
+  categories <- c("sessions", "inputs", "outputs", "errors")
+  result <- lapply(stats::setNames(categories, categories), function(cat) {
+    dfs <- lapply(parsed, function(d) d[[cat]] %||% data.frame())
+    dfs <- Filter(function(d) is.data.frame(d) && nrow(d) > 0, dfs)
+    if (length(dfs) == 0) return(data.frame())
+    tryCatch(
+      dplyr::bind_rows(dfs),
+      error = function(e) {
+        message(paste("bind_rows fejlede for", cat, ":", e$message))
+        data.frame()
+      }
+    )
+  })
+
+  result
+}
+
+`%||%` <- function(x, y) if (is.null(x)) y else x
+
+#' Indlaes analytics-data fra privat GitHub repo
+#'
+#' Kloner PIN_REPO_URL til midlertidig mappe, laeser alle .rds-filer
+#' i sessions/ og bind'er dem sammen. Returnerer tom default-struktur
+#' hvis env vars mangler eller clone fejler.
+#'
+#' Kraever env vars (per-content i Connect Cloud):
+#' - GITHUB_PAT: Fine-grained PAT med contents:read paa data-repo
+#' - PIN_REPO_URL: HTTPS URL til data-repo
+#' - PIN_REPO_BRANCH: Valgfri (default: "main")
+#'
+#' @return Navngivet liste med sessions, inputs, outputs, errors data.frames
+load_analytics_data <- function() {
+  pat <- Sys.getenv("GITHUB_PAT")
+  repo_url <- Sys.getenv("PIN_REPO_URL")
+  branch <- Sys.getenv("PIN_REPO_BRANCH")
+  if (nchar(branch) == 0) branch <- "main"
+
+  if (nchar(pat) == 0 || nchar(repo_url) == 0) {
+    message("GITHUB_PAT eller PIN_REPO_URL ikke sat — bruger tom data")
+    return(default_analytics_data())
+  }
+
+  tmp_dir <- tempfile("bispcharts-read-")
+  on.exit(unlink(tmp_dir, recursive = TRUE, force = TRUE), add = TRUE)
+
+  sessions_dir <- clone_data_repo(repo_url, pat, branch, dest = tmp_dir)
+  if (is.null(sessions_dir)) return(default_analytics_data())
+
+  bind_session_rds_files(sessions_dir)
 }
 
 #' Udtrak client metadata fra inputs
 #'
-#' Filtrerer analytics_client_metadata inputs og parser til data.frame.
-#'
 #' @param inputs data.frame med alle inputs fra shinylogs
-#' @return data.frame med client metadata (visitor_id, browser, os, screen, etc.)
+#' @return data.frame med client metadata
 extract_client_metadata <- function(inputs) {
   if (nrow(inputs) == 0) return(data.frame())
 
   meta_inputs <- inputs[grepl("analytics_client_metadata", inputs$name, fixed = TRUE), ]
   if (nrow(meta_inputs) == 0) return(data.frame())
 
-  # Parse value-kolonne (JSON-string fra shinylogs)
   parsed <- lapply(meta_inputs$value, function(v) {
     tryCatch(jsonlite::fromJSON(v), error = function(e) NULL)
   })
@@ -65,10 +107,8 @@ extract_client_metadata <- function(inputs) {
 
 #' Udtrak performance metrics fra inputs
 #'
-#' Filtrerer analytics_performance inputs og parser til data.frame.
-#'
 #' @param inputs data.frame med alle inputs fra shinylogs
-#' @return data.frame med performance metrics (type, duration_ms, etc.)
+#' @return data.frame med performance metrics
 extract_performance_metrics <- function(inputs) {
   if (nrow(inputs) == 0) return(data.frame())
 

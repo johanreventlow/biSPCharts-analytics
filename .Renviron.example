@@ -1,4 +1,13 @@
-# Posit Connect Cloud credentials
-# Kopiér til .Renviron og udfyld med rigtige vaerdier
-CONNECT_SERVER=https://your-connect-cloud-url.posit.cloud
-CONNECT_API_KEY=your-api-key-here
+# Miljø-variabler for lokal udvikling.
+# Kopier til .Renviron og udfyld.
+#
+# Analytics data-pipeline
+# -----------------------
+# Appen laeser analytics-data fra et privat GitHub repo
+# (append-model: én .rds-fil per Shiny-session).
+#
+# PAT: fine-grained Personal Access Token med contents:read
+#      for repo'et bispcharts-analytics-data.
+GITHUB_PAT=ghp_your_fine_grained_token_here
+PIN_REPO_URL=https://github.com/johanreventlow/bispcharts-analytics-data.git
+# PIN_REPO_BRANCH=main  # (valgfri, default: main)
