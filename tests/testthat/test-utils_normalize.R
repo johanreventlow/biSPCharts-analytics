@@ -54,3 +54,21 @@ test_that("normalize_error_message() stripper linjenumre + dynamiske ID'er", {
     c("Error: line N", "Error: line N")
   )
 })
+
+test_that("is_test_session() flag'er korte sessions + stop-ord titler", {
+  facts <- tibble::tibble(
+    sessionid = c("s1", "s2", "s3", "s4", "s5"),
+    duration_sec = c(5, 600, 8, 120, 600),
+    indicator_title_raw = c("Tryksaar", "Tryksaar", "test", "abc", "Fald")
+  )
+  result <- is_test_session(facts)
+  expect_equal(result, c(TRUE, FALSE, TRUE, TRUE, FALSE))
+})
+
+test_that("is_test_session() haandterer manglende kolonner", {
+  facts_no_title <- tibble::tibble(
+    sessionid = "s1", duration_sec = 5
+  )
+  result <- is_test_session(facts_no_title)
+  expect_equal(result, TRUE)
+})

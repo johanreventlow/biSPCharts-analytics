@@ -86,3 +86,25 @@ normalize_error_message <- function(msg) {
   result <- gsub("\\b\\d{4,}\\b", "N", result)
   result
 }
+
+#' Flag test-sessions via heuristik
+#'
+#' Sessions er test hvis:
+#' - duration_sec < test_session_max_duration (default 10s), ELLER
+#' - indicator_title_raw matcher stop-liste
+#'
+#' @param facts tibble med kolonner sessionid, duration_sec, (valgfri) indicator_title_raw
+#' @return logical-vektor med samme laengde som rows i facts
+#' @export
+is_test_session <- function(facts) {
+  short <- !is.na(facts$duration_sec) &
+    facts$duration_sec < ANALYTICS_CONSTANTS$test_session_max_duration
+
+  stop_title <- if ("indicator_title_raw" %in% names(facts)) {
+    is_stop_word(facts$indicator_title_raw)
+  } else {
+    rep(FALSE, nrow(facts))
+  }
+
+  short | stop_title
+}
