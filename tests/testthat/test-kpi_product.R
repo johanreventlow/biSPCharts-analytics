@@ -30,3 +30,24 @@ test_that("kpi_performance_percentiles() returnerer p50 + p95", {
   expect_true(all(c("metric", "p50", "p95") %in% names(result$data)))
   expect_true("load_complete_ms" %in% result$data$metric)
 })
+
+test_that("kpi_wizard_funnel() wrap'er build_wizard_funnel()", {
+  result <- kpi_wizard_funnel(facts)
+  expect_true(all(c("data", "decision_job") %in% names(result)))
+  expect_equal(nrow(result$data), 5L)
+})
+
+test_that("kpi_browser_errors() cross-tab kun med n >= browser_min_sessions", {
+  result <- kpi_browser_errors(facts)
+  expect_s3_class(result$data, "tbl_df")
+  expect_true(all(c("browser_os", "n_sessions", "error_rate") %in% names(result$data)))
+  expect_true(all(result$data$n_sessions >= ANALYTICS_CONSTANTS$browser_min_sessions))
+})
+
+test_that("kpi_feature_adoption() returnerer % sessions per tracked input", {
+  feature_ids <- c("chart_type", "skift_column")
+  result <- kpi_feature_adoption(facts, fx$inputs, feature_ids)
+  expect_s3_class(result$data, "tbl_df")
+  expect_true(all(c("feature_id", "adoption_pct") %in% names(result$data)))
+  expect_equal(nrow(result$data), 2L)
+})

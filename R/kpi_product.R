@@ -114,3 +114,103 @@ kpi_performance_percentiles <- function(facts, days = 28L,
                      ANALYTICS_CONSTANTS$perf_min_n, ".")
   )
 }
+
+#' P2: Wizard funnel (wrapper)
+#'
+#' @inheritParams build_wizard_funnel
+#' @return list med data, decision_job
+#' @export
+kpi_wizard_funnel <- function(facts, exclude_test_sessions = TRUE) {
+  list(
+    data = build_wizard_funnel(facts, exclude_test_sessions),
+    decision_job = "Hvor sker friction? Hvilket trin taber flest brugere?",
+    caveat = "Lag 1 proxy - trin 1 (data) detekteres indirekte via efterfoelgende inputs."
+  )
+}
+
+#' P5: Browser/OS-kombinationer + fejl-rate
+#'
+#' Kun kombinationer med >= browser_min_sessions vises.
+#'
+#' @param facts session_facts tibble
+#' @return list med data (tibble), decision_job
+#' @export
+kpi_browser_errors <- function(facts) {
+  if (nrow(facts) == 0L) {
+    return(list(
+      data = tibble::tibble(browser_os = character(), n_sessions = integer(),
+                             n_errors = integer(), error_rate = numeric()),
+      decision_job = "Er en browser problematisk?",
+      caveat = "Ingen data."
+    ))
+  }
+
+  cleaned <- facts |> dplyr::filter(!.data$is_test_session)
+  cleaned$browser_os <- paste(cleaned$browser, cleaned$os, sep = " / ")
+
+  data <- cleaned |>
+    dplyr::group_by(.data$browser_os) |>
+    dplyr::summarise(
+      n_sessions = dplyr::n(),
+      n_errors = sum(.data$n_errors > 0L, na.rm = TRUE),
+      error_rate = round(.data$n_errors / .data$n_sessions * 100, 1),
+      .groups = "drop"
+    ) |>
+    dplyr::filter(.data$n_sessions >= ANALYTICS_CONSTANTS$browser_min_sessions) |>
+    dplyr::arrange(dplyr::desc(.data$error_rate))
+
+  list(
+    data = data,
+    decision_job = "Er en browser/OS-kombination problematisk?",
+    caveat = paste0("Min ", ANALYTICS_CONSTANTS$browser_min_sessions,
+                     " sessions per kombination.")
+  )
+}
+
+#' P6: Feature-adoption rate
+#'
+#' For hver tracked input-id beregner % sessions der minimum trigget den.
+#'
+#' @param facts session_facts tibble
+#' @param inputs raw inputs data.frame
+#' @param feature_ids character-vektor af input-name vaerdier
+#' @param days tidsvindue
+#' @param reference_time POSIXct
+#' @return list med data, decision_job
+#' @export
+kpi_feature_adoption <- function(facts, inputs, feature_ids,
+                                   days = 28L, reference_time = Sys.time()) {
+  cutoff <- reference_time - lubridate::days(days)
+  active_sessions <- facts |>
+    dplyr::filter(!.data$is_test_session,
+                   .data$connected_at >= cutoff) |>
+    dplyr::pull(.data$sessionid)
+
+  total <- length(active_sessions)
+  if (total == 0L) {
+    return(list(
+      data = tibble::tibble(feature_id = feature_ids,
+                             n_sessions = 0L, adoption_pct = NA_real_),
+      decision_job = "Bruger nogen feature X? Hvis nej = sunset-kandidat.",
+      caveat = "Ingen aktive sessions i vinduet."
+    ))
+  }
+
+  rows <- lapply(feature_ids, function(fid) {
+    matched <- inputs |>
+      dplyr::filter(.data$name == fid, .data$sessionid %in% active_sessions) |>
+      dplyr::pull(.data$sessionid) |>
+      unique()
+    tibble::tibble(
+      feature_id = fid,
+      n_sessions = length(matched),
+      adoption_pct = round(length(matched) / total * 100, 1)
+    )
+  })
+
+  list(
+    data = dplyr::bind_rows(rows) |> dplyr::arrange(dplyr::desc(.data$adoption_pct)),
+    decision_job = "Bruger nogen feature X? Hvis nej = sunset-kandidat.",
+    caveat = "Liste over feature-id'er vedligeholdes manuelt."
+  )
+}
