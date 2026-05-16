@@ -45,15 +45,6 @@ kpi_export_breakdown <- function(facts, days = 28L, reference_time = Sys.time())
   }
 
   formats <- unlist(filtered$export_formats)
-  # Normaliser: strip eventuelle suffixer (fx "pdfclick" -> "pdf") fordi
-  # upstream regex i transform_sessions.R kun matcher "^export_(fmt)_" og
-  # efterlader resten af input-navnet.
-  known_formats <- c("pdf", "docx", "png", "svg", "ai")
-  formats <- vapply(formats, function(f) {
-    hit <- known_formats[startsWith(f, known_formats)]
-    if (length(hit) == 0L) f else hit[which.max(nchar(hit))]
-  }, character(1), USE.NAMES = FALSE)
-
   data <- tibble::tibble(format = formats) |>
     dplyr::count(.data$format, name = "n_sessions", sort = TRUE)
 
