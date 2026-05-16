@@ -47,3 +47,44 @@ test_that("build_session_facts() beregner duration_sec + engaged korrekt", {
     result$duration_sec >= ANALYTICS_CONSTANTS$engaged_duration_sec
   )
 })
+
+test_that("build_session_facts() udfylder visitor_id + browser fra client_meta", {
+  result <- build_session_facts(
+    fx$sessions, fx$inputs, fx$outputs, fx$errors, client_meta, perf_metrics
+  )
+  expect_true(any(!is.na(result$visitor_id)))
+  expect_true(any(result$browser %in% c("Chrome", "Firefox", "Safari", "Edge")))
+})
+
+test_that("build_session_facts() udleder wizard-steps korrekt", {
+  result <- build_session_facts(
+    fx$sessions, fx$inputs, fx$outputs, fx$errors, client_meta, perf_metrics
+  )
+  # Fixture: 30 sessions med chart_type, 20 med export_
+  expect_equal(sum(result$step_chart_type), 30L)
+  expect_equal(sum(result$step_exported), 20L)
+  expect_equal(sum(result$step_columns), 40L)
+})
+
+test_that("build_session_facts() taeller errors per session", {
+  result <- build_session_facts(
+    fx$sessions, fx$inputs, fx$outputs, fx$errors, client_meta, perf_metrics
+  )
+  # Fixture: 8 errors fordelt paa 8 sessions
+  expect_equal(sum(result$n_errors), nrow(fx$errors))
+  expect_equal(sum(result$n_errors > 0L), 8L)
+})
+
+test_that("build_session_facts() joiner performance-metrics", {
+  result <- build_session_facts(
+    fx$sessions, fx$inputs, fx$outputs, fx$errors, client_meta, perf_metrics
+  )
+  expect_true(any(!is.na(result$load_complete_ms)))
+})
+
+test_that("build_session_facts() flag'er test-sessions korrekt", {
+  result <- build_session_facts(
+    fx$sessions, fx$inputs, fx$outputs, fx$errors, client_meta, perf_metrics
+  )
+  expect_true(sum(result$is_test_session) > 0L)
+})
