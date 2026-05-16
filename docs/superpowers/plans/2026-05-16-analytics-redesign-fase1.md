@@ -58,7 +58,7 @@
 
 - **Engaged session-tærskel:** `ENGAGED_DURATION_SEC = 30`
 - **Tidsvinduer:** `WINDOW_SHORT_DAYS = 7`, `WINDOW_LONG_DAYS = 28`
-- **Indikator-clustering:** Jaro-Winkler distance, threshold `0.15`, min word length `3`
+- **Indikator-clustering:** Jaro-Winkler distance, threshold `0.2` (tuned i task 7 fra initial 0.15), min word length `3`
 - **Stop-liste (test-titler):** `c("test", "abc", "asdf", "qwerty", "xxx", "123", "test123", "lorem", "ipsum")`
 - **Min sessions for browser-cross-tab:** `5`
 - **Min sessions per heatmap-celle:** `3`
@@ -407,7 +407,7 @@ ANALYTICS_CONSTANTS <- list(
   engaged_duration_sec = 30L,
   window_short_days = 7L,
   window_long_days = 28L,
-  indicator_cluster_threshold = 0.15,
+  indicator_cluster_threshold = 0.2,
   indicator_min_length = 3L,
   stop_words = c("test", "abc", "asdf", "qwerty", "xxx", "123",
                  "test123", "lorem", "ipsum"),
@@ -2713,7 +2713,7 @@ Alle KPI'er har eksplicit decision-job + kendte fejl er fixet.
 Alle tærskler eksponeret i `ANALYTICS_CONSTANTS`:
 
 - `engaged_duration_sec = 30` — minimum varighed for "engaged" session
-- `indicator_cluster_threshold = 0.15` — Jaro-Winkler threshold for fuzzy-cluster
+- `indicator_cluster_threshold = 0.2` — Jaro-Winkler threshold for fuzzy-cluster (tuned i task 7)
 - `browser_min_sessions = 5` — minimum sessions per browser/OS-kombination
 - `heatmap_min_cell = 3` — minimum sessions per heatmap-celle
 - `perf_min_n = 10` — minimum n for percentil-beregning

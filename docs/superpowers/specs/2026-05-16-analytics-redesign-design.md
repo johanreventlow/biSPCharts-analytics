@@ -138,7 +138,7 @@ Alt nedenstående bygges uden ændringer i biSPCharts. Hver KPI har: decision-jo
   2. Drop tomme + < 3 tegn
   3. Lowercase + trim + collapse whitespace
   4. Drop test-værdier via stop-liste ("test", "abc", "asdf", …)
-  5. Fuzzy-cluster med `stringdist::stringdistmatrix` (Jaro-Winkler) + threshold 0.15
+  5. Fuzzy-cluster med `stringdist::stringdistmatrix` (Jaro-Winkler) + threshold 0.2 (bumped fra 0.15 i task 7 for at dække "tryksaar afsnit B"-variant; JW=0.176)
   6. Pick repræsentant per klynge (mest hyppige variant)
   7. Top 20 efter unikke sessions
 - Kilde: `inputs`
@@ -352,7 +352,7 @@ Tilbageværende tekniske regler (kvalitet/defensive coding, ej compliance):
 
 1. **Filstruktur-refactor** — slet `kpi_calculations.R`, `plot_overview.R`, `plot_technical.R`. Opret `utils_normalize.R`, `transform_sessions.R`, `transform_indicators.R`, `transform_funnel.R`.
 2. **session_facts builder** — `build_session_facts(sessions, inputs, outputs, errors, client_meta, perf_metrics)`. Test mod synthetic fixture (50 sessions).
-3. **Indicator-clustering pipeline** — `normalize_indicator_titles()` + `cluster_indicator_titles()` (Jaro-Winkler, threshold 0.15). Test: kendte clusters (tryksår-varianter), stop-liste, < 3 tegn drops.
+3. **Indicator-clustering pipeline** — `normalize_indicator_titles()` + `cluster_indicator_titles()` (Jaro-Winkler, threshold 0.2). Test: kendte clusters (tryksår-varianter), stop-liste, < 3 tegn drops.
 4. **Funnel-builder (Lag 1 proxy)** — `build_wizard_funnel(session_facts)` → 5-trins tibble. Test: synthetic sessions med forskellige step-kombinationer.
 5. **KPI-moduler split** — `kpi_product.R` (P1-P6) + `kpi_management.R` (L1-L6 uden hospital/afdeling).
 6. **Plot-moduler split** — `plot_product.R` + `plot_management.R`.
