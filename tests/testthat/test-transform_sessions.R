@@ -88,3 +88,11 @@ test_that("build_session_facts() flag'er test-sessions korrekt", {
   )
   expect_true(sum(result$is_test_session) > 0L)
 })
+
+test_that("build_session_facts() udleder rene export-formats uden suffix", {
+  result <- build_session_facts(
+    fx$sessions, fx$inputs, fx$outputs, fx$errors, client_meta, perf_metrics
+  )
+  all_formats <- unique(unlist(result$export_formats))
+  expect_true(all(all_formats %in% c("pdf", "docx", "png", "svg", "ai")))
+})

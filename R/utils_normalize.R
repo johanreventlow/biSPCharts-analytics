@@ -17,7 +17,7 @@ ANALYTICS_CONSTANTS <- list(
   heatmap_min_cell = 3L,
   perf_min_n = 10L,
   test_session_max_duration = 10L,
-  export_regex = "^export_(pdf|docx|png|svg|ai)_",
+  export_regex = "^export_(pdf|docx|png|svg|ai)_.*$",
   column_input_regex = "^(skift|frys|target|maal)_column$"
 )
 
