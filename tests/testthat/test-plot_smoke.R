@@ -43,3 +43,33 @@ test_that("plot-funktioner haandterer tomt input gracefully", {
   expect_s3_class(plot_wizard_funnel(empty_funnel), "ggplot")
   expect_s3_class(plot_active_sessions_trend(empty_facts), "ggplot")
 })
+
+test_that("plot_export_breakdown() returnerer ggplot", {
+  result <- kpi_export_breakdown(facts, reference_time = ref_time)
+  p <- plot_export_breakdown(result$data)
+  expect_s3_class(p, "ggplot")
+})
+
+test_that("plot_weekly_trend() returnerer ggplot med partial-uge-markering", {
+  result <- kpi_weekly_trend(facts, n_weeks = 4L, reference_time = ref_time)
+  p <- plot_weekly_trend(result$data)
+  expect_s3_class(p, "ggplot")
+})
+
+test_that("plot_top_indicators() returnerer ggplot", {
+  result <- kpi_top_indicators(facts, reference_time = ref_time)
+  p <- plot_top_indicators(result$data)
+  expect_s3_class(p, "ggplot")
+})
+
+test_that("plot_cohort_retention() returnerer ggplot", {
+  result <- kpi_cohort_retention(facts, reference_time = ref_time)
+  p <- plot_cohort_retention(result$data)
+  expect_s3_class(p, "ggplot")
+})
+
+test_that("plot_use_case_heatmap() returnerer ggplot", {
+  result <- kpi_use_case_heatmap(facts, reference_time = ref_time)
+  p <- plot_use_case_heatmap(result$data)
+  expect_s3_class(p, "ggplot")
+})

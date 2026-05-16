@@ -33,11 +33,15 @@ plot_sessions_over_time <- function(sessions) {
     ggplot2::theme_minimal()
 }
 
-#' Top 10 indikatorer (horisontal barchart)
+#' Top 10 indikatorer (legacy overblik-fane)
+#'
+#' Legacy variant til Overblik-fanen som opererer direkte paa `inputs`.
+#' View L-fanen bruger `plot_top_indicators()` (R/plot_management.R) med
+#' normaliserede + fuzzy-clustrede indikator-titler.
 #'
 #' @param inputs data.frame med inputs
 #' @return ggplot objekt
-plot_top_indicators <- function(inputs) {
+plot_top_indicators_overview <- function(inputs) {
   if (nrow(inputs) == 0) return(ggplot2::ggplot() + ggplot2::theme_void() +
     ggplot2::annotate("text", x = 0.5, y = 0.5, label = "Ingen data", size = 6, color = "grey60"))
 

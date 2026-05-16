@@ -104,7 +104,7 @@ plot_sessions_over_time(data$sessions)
 
 ```{r}
 #| title: "Top 10 indikatorer"
-plot_top_indicators(data$inputs)
+plot_top_indicators_overview(data$inputs)
 ```
 
 ## Row {height=40%}
