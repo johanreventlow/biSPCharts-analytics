@@ -111,7 +111,7 @@ plot_top_indicators(data$inputs)
 
 ```{r}
 #| title: "Wizard-flow"
-plot_wizard_funnel(data$sessions, data$inputs)
+plot_wizard_funnel_overview(data$sessions, data$inputs)
 ```
 
 # Teknisk

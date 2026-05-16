@@ -58,12 +58,15 @@ plot_top_indicators <- function(inputs) {
     ggplot2::theme_minimal()
 }
 
-#' Wizard completion funnel
+#' Wizard completion funnel (legacy overblik-fane: Upload/Analyser/Eksport)
+#'
+#' Bevarer den oprindelige 3-trins funnel-visning til Overblik-fanen.
+#' View P-fanen bruger `plot_wizard_funnel()` med 5-trins Lag 1-proxy.
 #'
 #' @param sessions data.frame med sessions
 #' @param inputs data.frame med inputs
 #' @return ggplot objekt
-plot_wizard_funnel <- function(sessions, inputs) {
+plot_wizard_funnel_overview <- function(sessions, inputs) {
   total <- nrow(sessions)
   if (total == 0) return(ggplot2::ggplot() + ggplot2::theme_void() +
     ggplot2::annotate("text", x = 0.5, y = 0.5, label = "Ingen data", size = 6, color = "grey60"))
