@@ -32,3 +32,23 @@ test_that("kpi_weekly_trend() markerer partial uge", {
   # Den sidste uge kan vaere partial
   expect_true(any(result$data$is_partial) || all(!result$data$is_partial))
 })
+
+test_that("kpi_top_indicators() returnerer top-N normaliserede clusters", {
+  result <- kpi_top_indicators(facts, top_n = 5L, reference_time = ref_time)
+  expect_s3_class(result$data, "tbl_df")
+  expect_true(all(c("cluster", "n_sessions") %in% names(result$data)))
+  expect_lte(nrow(result$data), 5L)
+})
+
+test_that("kpi_cohort_retention() returnerer matrix-tibble", {
+  result <- kpi_cohort_retention(facts, n_weeks = 4L, reference_time = ref_time)
+  expect_s3_class(result$data, "tbl_df")
+  expect_true(all(c("cohort_week", "weeks_since", "retention_pct") %in% names(result$data)))
+})
+
+test_that("kpi_use_case_heatmap() returnerer celler med min antal", {
+  result <- kpi_use_case_heatmap(facts, reference_time = ref_time)
+  expect_s3_class(result$data, "tbl_df")
+  expect_true(all(c("chart_type", "cluster", "n_sessions") %in% names(result$data)))
+  expect_true(all(result$data$n_sessions >= ANALYTICS_CONSTANTS$heatmap_min_cell))
+})
