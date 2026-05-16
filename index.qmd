@@ -9,164 +9,180 @@ format: dashboard
 library(dplyr)
 library(ggplot2)
 library(lubridate)
-library(pins)
 library(scales)
+library(stringdist)
+library(tibble)
 library(tidyr)
+library(zoo)
 
 # Indlaes alle R-filer
 for (f in list.files("R", pattern = "\\.R$", full.names = TRUE)) {
   source(f)
 }
 
-# Indlaes data
-data <- load_analytics_data()
-client_meta <- extract_client_metadata(data$inputs)
-perf_metrics <- extract_performance_metrics(data$inputs)
-kpis <- calculate_overview_kpis(data$sessions, data$inputs, client_meta)
+# Indlaes + transformer data
+raw <- load_analytics_data()
+client_meta <- extract_client_metadata(raw$inputs)
+perf_metrics <- extract_performance_metrics(raw$inputs)
+facts <- build_session_facts(raw$sessions, raw$inputs, raw$outputs,
+                              raw$errors, client_meta, perf_metrics)
+ref_time <- if (nrow(facts) > 0L) max(facts$connected_at, na.rm = TRUE) else Sys.time()
+
+# Tracked features for adoption-KPI
+tracked_features <- c("chart_type", "skift_column", "frys_column",
+                       "target_column", "indicator_title")
 ```
 
-# Overblik
+# Produkt
 
-## Row {height=20%}
+## Row {height=15%}
 
 ```{r}
 #| content: valuebox
-#| title: "Sessions denne uge"
-list(
-  value = kpis$sessions_count,
-  icon = "bar-chart",
-  color = "primary"
-)
-```
-
-```{r}
-#| content: valuebox
-#| title: "Unikke besogende"
-list(
-  value = ifelse(is.na(kpis$unique_visitors), "—", kpis$unique_visitors),
-  icon = "people",
-  color = "info"
-)
+#| title: "Aktive sessions (28d)"
+r <- kpi_active_sessions(facts, days = 28L, reference_time = ref_time)
+list(value = r$value, icon = "bar-chart", color = "primary")
 ```
 
 ```{r}
 #| content: valuebox
-#| title: "Completion rate"
-list(
-  value = ifelse(is.na(kpis$completion_rate), "—", paste0(kpis$completion_rate, "%")),
-  icon = "check-circle",
-  color = ifelse(!is.na(kpis$completion_rate) && kpis$completion_rate >= 50, "success", "warning")
-)
+#| title: "Aktive sessions (7d)"
+r <- kpi_active_sessions(facts, days = 7L, reference_time = ref_time)
+list(value = r$value, icon = "bar-chart", color = "info")
 ```
 
 ```{r}
 #| content: valuebox
-#| title: "Gns. varighed"
-list(
-  value = ifelse(is.na(kpis$median_duration_min), "—", paste0(kpis$median_duration_min, " min")),
-  icon = "clock",
-  color = "secondary"
-)
+#| title: "Sessions med fejl (28d)"
+r <- kpi_error_clusters(facts, top_n = 100L, reference_time = ref_time)
+list(value = sum(r$data$n_sessions), icon = "exclamation-triangle", color = "warning")
 ```
 
-```{r}
-#| content: valuebox
-#| title: "Top indikator"
-list(
-  value = kpis$top_indicator,
-  icon = "star"
-)
-```
-
-```{r}
-#| content: valuebox
-#| title: "Trend (uge/uge)"
-trend_label <- if (is.na(kpis$trend_pct)) "—" else paste0(
-  ifelse(kpis$trend_pct >= 0, "+", ""), kpis$trend_pct, "%"
-)
-list(
-  value = trend_label,
-  icon = ifelse(!is.na(kpis$trend_pct) && kpis$trend_pct >= 0, "arrow-up", "arrow-down"),
-  color = ifelse(!is.na(kpis$trend_pct) && kpis$trend_pct >= 0, "success", "danger")
-)
-```
-
-## Row {height=40%}
+## Row {height=45%}
 
 ### Column {width=60%}
 
 ```{r}
-#| title: "Sessions per dag"
-plot_sessions_over_time(data$sessions)
+#| title: "Aktive sessions trend"
+#| subtitle: "Beslutning: er trafikken stabil? Pludselig drop = produktionsproblem."
+plot_active_sessions_trend(facts, days = 28L, reference_time = ref_time)
 ```
 
 ### Column {width=40%}
 
 ```{r}
-#| title: "Top 10 indikatorer"
-plot_top_indicators_overview(data$inputs)
+#| title: "Wizard-frafald"
+#| subtitle: "Beslutning: hvor sker friction? Hvilket trin taber flest brugere?"
+plot_wizard_funnel(build_wizard_funnel(facts))
 ```
 
 ## Row {height=40%}
 
+### Column {width=50%}
+
 ```{r}
-#| title: "Wizard-flow"
-plot_wizard_funnel_overview(data$sessions, data$inputs)
+#| title: "Fejl-cluster top 10"
+#| subtitle: "Beslutning: hvilke fejl rammer flest unikke sessions?"
+plot_error_clusters(kpi_error_clusters(facts, top_n = 10L, reference_time = ref_time)$data)
 ```
 
-# Teknisk
+### Column {width=50%}
 
-## Row {height=50%}
+```{r}
+#| title: "Performance p50 / p95"
+#| subtitle: "Beslutning: er load-tid acceptabel? P95 > 5s = undersoeg."
+plot_performance_percentiles(kpi_performance_percentiles(facts, reference_time = ref_time)$data)
+```
+
+## Row {height=40%}
+
+### Column {width=50%}
+
+```{r}
+#| title: "Browser/OS x fejl-rate"
+#| subtitle: "Beslutning: er en kombination problematisk?"
+plot_browser_errors(kpi_browser_errors(facts)$data)
+```
+
+### Column {width=50%}
+
+```{r}
+#| title: "Feature-adoption"
+#| subtitle: "Beslutning: bruger nogen feature X? Hvis nej = sunset-kandidat."
+adoption <- kpi_feature_adoption(facts, raw$inputs, tracked_features,
+                                  days = 28L, reference_time = ref_time)
+knitr::kable(adoption$data)
+```
+
+# Ledelse
+
+## Row {height=15%}
+
+```{r}
+#| content: valuebox
+#| title: "Aktive analyser (28d)"
+r <- kpi_active_analyses(facts, reference_time = ref_time)
+list(value = r$value, icon = "check-circle", color = "success")
+```
+
+```{r}
+#| content: valuebox
+#| title: "Eksporter (28d)"
+r <- kpi_export_breakdown(facts, reference_time = ref_time)
+list(value = sum(r$data$n_sessions), icon = "download", color = "primary")
+```
+
+```{r}
+#| content: valuebox
+#| title: "Unikke besoegende (28d)"
+unique_v <- facts |>
+  dplyr::filter(!is_test_session, !is.na(visitor_id),
+                 connected_at >= ref_time - lubridate::days(28L)) |>
+  dplyr::pull(visitor_id) |>
+  dplyr::n_distinct()
+list(value = unique_v, icon = "people", color = "info")
+```
+
+## Row {height=45%}
 
 ### Column {width=60%}
 
 ```{r}
-#| title: "Feature-brug"
-plot_feature_usage(data$inputs)
+#| title: "Sessions per uge"
+#| subtitle: "Beslutning: vokser brug eller plateauer?"
+plot_weekly_trend(kpi_weekly_trend(facts, n_weeks = 12L, reference_time = ref_time)$data)
 ```
 
 ### Column {width=40%}
 
 ```{r}
-#| title: "Wizard-flow (frafald)"
-plot_wizard_funnel_detailed(data$sessions, data$inputs)
+#| title: "Eksport-format"
+#| subtitle: "Beslutning: forlader output appen? Hvor?"
+plot_export_breakdown(kpi_export_breakdown(facts, reference_time = ref_time)$data)
 ```
 
-## Row {height=50%}
+## Row {height=40%}
 
 ### Column {width=50%}
 
 ```{r}
-#| title: "Fejl-oversigt"
-plot_error_overview(data$errors)
+#| title: "Top indikator-clusters"
+#| subtitle: "Beslutning: hvilke kvalitetstemaer dominerer?"
+plot_top_indicators(kpi_top_indicators(facts, top_n = 15L, reference_time = ref_time)$data)
 ```
 
 ### Column {width=50%}
 
 ```{r}
-#| title: "Performance"
-plot_performance(perf_metrics)
+#| title: "Cohort retention"
+#| subtitle: "Beslutning: vender brugere tilbage?"
+plot_cohort_retention(kpi_cohort_retention(facts, n_weeks = 6L, reference_time = ref_time)$data)
 ```
 
-## Row {height=50%}
-
-### Column {width=33%}
+## Row {height=40%}
 
 ```{r}
-#| title: "Browser/OS"
-plot_browser_os(client_meta)
-```
-
-### Column {width=33%}
-
-```{r}
-#| title: "Nye vs. tilbagevendende"
-plot_returning_visitors(data$sessions, client_meta)
-```
-
-### Column {width=34%}
-
-```{r}
-#| title: "Tidsmoenstre"
-plot_time_patterns(data$sessions)
+#| title: "Use case-fordeling (chart-type x indikator)"
+#| subtitle: "Beslutning: hvilke chart-typer driver hvilke use cases?"
+plot_use_case_heatmap(kpi_use_case_heatmap(facts, reference_time = ref_time)$data)
 ```
