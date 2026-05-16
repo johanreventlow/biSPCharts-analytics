@@ -9,7 +9,7 @@ ANALYTICS_CONSTANTS <- list(
   engaged_duration_sec = 30L,
   window_short_days = 7L,
   window_long_days = 28L,
-  indicator_cluster_threshold = 0.15,
+  indicator_cluster_threshold = 0.2,
   indicator_min_length = 3L,
   stop_words = c("test", "abc", "asdf", "qwerty", "xxx", "123",
                  "test123", "lorem", "ipsum"),
