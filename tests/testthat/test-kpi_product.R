@@ -51,3 +51,13 @@ test_that("kpi_feature_adoption() returnerer % sessions per tracked input", {
   expect_true(all(c("feature_id", "adoption_pct") %in% names(result$data)))
   expect_equal(nrow(result$data), 2L)
 })
+
+test_that("kpi_feature_adoption() haandterer tom inputs gracefully", {
+  empty_inputs <- data.frame()
+  feature_ids <- c("chart_type", "skift_column")
+  result <- kpi_feature_adoption(facts, empty_inputs, feature_ids,
+                                  reference_time = max(facts$connected_at, na.rm = TRUE))
+  expect_s3_class(result$data, "tbl_df")
+  expect_equal(nrow(result$data), 2L)
+  expect_true(all(result$data$n_sessions == 0L))
+})

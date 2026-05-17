@@ -196,6 +196,17 @@ kpi_feature_adoption <- function(facts, inputs, feature_ids,
     ))
   }
 
+  # Tom inputs (fx ingen sessions endnu i data-repo) eller manglende schema
+  if (!is.data.frame(inputs) || nrow(inputs) == 0L ||
+      !all(c("name", "sessionid") %in% names(inputs))) {
+    return(list(
+      data = tibble::tibble(feature_id = feature_ids,
+                             n_sessions = 0L, adoption_pct = 0),
+      decision_job = "Bruger nogen feature X? Hvis nej = sunset-kandidat.",
+      caveat = "Ingen inputs i data-repo'et."
+    ))
+  }
+
   rows <- lapply(feature_ids, function(fid) {
     matched <- inputs |>
       dplyr::filter(.data$name == fid, .data$sessionid %in% active_sessions) |>
