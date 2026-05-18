@@ -2766,7 +2766,7 @@
       "checksum": "bb16b7e73be13eba97c99d25b2a476b3"
     },
     ".claude/settings.local.json": {
-      "checksum": "d21f37466d010062ec73be38f42038dc"
+      "checksum": "39dafdb4b7e24d6728e931d935f0f5b0"
     },
     ".posit/publish/biSPCharts Analytics-VU16.toml": {
       "checksum": "726cbeb280374e16c0781f2c963a25ee"
@@ -2808,7 +2808,7 @@
       "checksum": "c8bf386f7d4e08139c8b573601cc2941"
     },
     "R/kpi_product.R": {
-      "checksum": "369286ce30143e5f7132ca2d8732df04"
+      "checksum": "a6754e8c51134e2583fbcf038c612abe"
     },
     "R/plot_management.R": {
       "checksum": "82b41654b6daecf7c2eba1a1e269ad88"
@@ -2844,7 +2844,7 @@
       "checksum": "79ca39bf2e0190b2a55dfe8131e22b06"
     },
     "tests/testthat/test-kpi_product.R": {
-      "checksum": "3066b09d6f843667ddf0aec1ef23af17"
+      "checksum": "4a46adb6f0627c48deeacbfae104c98b"
     },
     "tests/testthat/test-plot_smoke.R": {
       "checksum": "f9622da95d23a21407688a6e640ab93f"
