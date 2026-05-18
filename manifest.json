@@ -199,6 +199,33 @@
         "Archs": "brio.so.dSYM"
       }
     },
+    "bsicons": {
+      "Source": "CRAN",
+      "Repository": "https://cloud.r-project.org",
+      "description": {
+        "Package": "bsicons",
+        "Title": "Easily Work with 'Bootstrap' Icons",
+        "Version": "0.1.2",
+        "Authors@R": "c(\n    person(\"Carson\", \"Sievert\", , \"carson@posit.co\", role = c(\"cre\", \"aut\"),\n           comment = c(ORCID = \"0000-0002-4958-2844\")),\n    person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")),\n    person(\"Mark\", \"Otto\", role = \"cph\",\n           comment = \"Bootstrap icons maintainer\")\n  )",
+        "Description": "Easily use 'Bootstrap' icons inside 'Shiny' apps and 'R\n    Markdown' documents. More generally, icons can be inserted in any\n    'htmltools' document through inline 'SVG'.",
+        "License": "MIT + file LICENSE",
+        "URL": "https://github.com/rstudio/bsicons",
+        "BugReports": "https://github.com/rstudio/bsicons/issues",
+        "Depends": "R (>= 2.10)",
+        "Imports": "cli, htmltools, rlang, utils",
+        "Suggests": "bslib, processx, testthat, webshot2, withr",
+        "Config/testthat/edition": "3",
+        "Encoding": "UTF-8",
+        "RoxygenNote": "7.2.3",
+        "NeedsCompilation": "no",
+        "Packaged": "2023-11-03 23:29:00 UTC; cpsievert",
+        "Author": "Carson Sievert [cre, aut] (<https://orcid.org/0000-0002-4958-2844>),\n  Posit Software, PBC [cph, fnd],\n  Mark Otto [cph] (Bootstrap icons maintainer)",
+        "Maintainer": "Carson Sievert <carson@posit.co>",
+        "Repository": "CRAN",
+        "Date/Publication": "2023-11-04 00:30:05 UTC",
+        "Built": "R 4.5.0; ; 2025-04-01 07:48:51 UTC; unix"
+      }
+    },
     "bslib": {
       "Source": "CRAN",
       "Repository": "https://cloud.r-project.org",
@@ -2648,6 +2675,9 @@
     }
   },
   "files": {
+    "_fixture_preview.qmd": {
+      "checksum": "15581bf6af3e9e7e5e9473554a769028"
+    },
     "_quarto.yml": {
       "checksum": "f865fc291f8146d3e7ed231443277012"
     },
@@ -2682,7 +2712,7 @@
       "checksum": "44ec765947a39f66351ff0d6cb78025f"
     },
     "_site/index.html": {
-      "checksum": "1308275ecfd9f68c884200413e49b796"
+      "checksum": "36a0a8acaf8f6971e66262459c1ad4c0"
     },
     "_site/site_libs/bootstrap/bootstrap-5b4ad623e5705c0698d39aec6f10cf02.min.css": {
       "checksum": "5b4ad623e5705c0698d39aec6f10cf02"
@@ -2699,8 +2729,185 @@
     "_site/site_libs/bootstrap/bootstrap.min.js": {
       "checksum": "e2b09c06f0e714b6144a6788a28e3950"
     },
+    "_site/site_libs/bslib-component-css-0.10.0/code-editor.css": {
+      "checksum": "40037b4d1237796811d2395743b6261c"
+    },
+    "_site/site_libs/bslib-component-css-0.10.0/code-editor.js": {
+      "checksum": "a582ce38858a429bb7298ea259ebdb5e"
+    },
+    "_site/site_libs/bslib-component-css-0.10.0/code-editor.js.map": {
+      "checksum": "b06d8c6a2b8fbf2f82d602d839d007c8"
+    },
+    "_site/site_libs/bslib-component-css-0.10.0/code-editor.min.js": {
+      "checksum": "2871bb697b3753327b35bca9cf27104f"
+    },
+    "_site/site_libs/bslib-component-css-0.10.0/code-editor.min.js.map": {
+      "checksum": "8a3f8cc054f0dd8404d99e578fb904dc"
+    },
+    "_site/site_libs/bslib-component-css-0.10.0/components.css": {
+      "checksum": "42401a6f60d1d174b1e8c68856423b85"
+    },
+    "_site/site_libs/bslib-component-css-0.10.0/components.js": {
+      "checksum": "936ae95b994e355c77662ae0e37bb5f1"
+    },
+    "_site/site_libs/bslib-component-css-0.10.0/components.js.map": {
+      "checksum": "a70d3f5f71dce50d02d846c2112fe63a"
+    },
+    "_site/site_libs/bslib-component-css-0.10.0/components.min.js": {
+      "checksum": "b6db4bfecae4d61b5e20d983cd6fdba4"
+    },
+    "_site/site_libs/bslib-component-css-0.10.0/components.min.js.map": {
+      "checksum": "70d0ebdc0031ce9986c2b4d8c5a3f8fe"
+    },
+    "_site/site_libs/bslib-component-css-0.10.0/web-components.js": {
+      "checksum": "2a36c78ae73f0d71a8bde29dcd1b2f67"
+    },
+    "_site/site_libs/bslib-component-css-0.10.0/web-components.js.map": {
+      "checksum": "32b54dc84884507e0c27610e8bb62b8c"
+    },
+    "_site/site_libs/bslib-component-css-0.10.0/web-components.min.js": {
+      "checksum": "a2ff28a7d773835e5739326c6a5fda39"
+    },
+    "_site/site_libs/bslib-component-css-0.10.0/web-components.min.js.map": {
+      "checksum": "8a37d599a4405a93ef466f19109b46eb"
+    },
+    "_site/site_libs/bslib-component-css-0.10.0/webComponents/webComponents.min.js": {
+      "checksum": "e85f1edc605316b1bc4e8b862942f902"
+    },
+    "_site/site_libs/bslib-component-js-0.10.0/code-editor.css": {
+      "checksum": "40037b4d1237796811d2395743b6261c"
+    },
+    "_site/site_libs/bslib-component-js-0.10.0/code-editor.js": {
+      "checksum": "a582ce38858a429bb7298ea259ebdb5e"
+    },
+    "_site/site_libs/bslib-component-js-0.10.0/code-editor.js.map": {
+      "checksum": "b06d8c6a2b8fbf2f82d602d839d007c8"
+    },
+    "_site/site_libs/bslib-component-js-0.10.0/code-editor.min.js": {
+      "checksum": "2871bb697b3753327b35bca9cf27104f"
+    },
+    "_site/site_libs/bslib-component-js-0.10.0/code-editor.min.js.map": {
+      "checksum": "8a3f8cc054f0dd8404d99e578fb904dc"
+    },
+    "_site/site_libs/bslib-component-js-0.10.0/components.css": {
+      "checksum": "42401a6f60d1d174b1e8c68856423b85"
+    },
+    "_site/site_libs/bslib-component-js-0.10.0/components.js": {
+      "checksum": "936ae95b994e355c77662ae0e37bb5f1"
+    },
+    "_site/site_libs/bslib-component-js-0.10.0/components.js.map": {
+      "checksum": "a70d3f5f71dce50d02d846c2112fe63a"
+    },
+    "_site/site_libs/bslib-component-js-0.10.0/components.min.js": {
+      "checksum": "b6db4bfecae4d61b5e20d983cd6fdba4"
+    },
+    "_site/site_libs/bslib-component-js-0.10.0/components.min.js.map": {
+      "checksum": "70d0ebdc0031ce9986c2b4d8c5a3f8fe"
+    },
+    "_site/site_libs/bslib-component-js-0.10.0/web-components.js": {
+      "checksum": "2a36c78ae73f0d71a8bde29dcd1b2f67"
+    },
+    "_site/site_libs/bslib-component-js-0.10.0/web-components.js.map": {
+      "checksum": "32b54dc84884507e0c27610e8bb62b8c"
+    },
+    "_site/site_libs/bslib-component-js-0.10.0/web-components.min.js": {
+      "checksum": "a2ff28a7d773835e5739326c6a5fda39"
+    },
+    "_site/site_libs/bslib-component-js-0.10.0/web-components.min.js.map": {
+      "checksum": "8a37d599a4405a93ef466f19109b46eb"
+    },
+    "_site/site_libs/bslib-component-js-0.10.0/webComponents/webComponents.min.js": {
+      "checksum": "e85f1edc605316b1bc4e8b862942f902"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/dist/code-editor.css": {
+      "checksum": "40037b4d1237796811d2395743b6261c"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/dist/code-editor.js": {
+      "checksum": "a582ce38858a429bb7298ea259ebdb5e"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/dist/code-editor.js.map": {
+      "checksum": "b06d8c6a2b8fbf2f82d602d839d007c8"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/dist/code-editor.min.js": {
+      "checksum": "2871bb697b3753327b35bca9cf27104f"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/dist/code-editor.min.js.map": {
+      "checksum": "8a3f8cc054f0dd8404d99e578fb904dc"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/dist/components.css": {
+      "checksum": "42401a6f60d1d174b1e8c68856423b85"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/dist/components.js": {
+      "checksum": "936ae95b994e355c77662ae0e37bb5f1"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/dist/components.js.map": {
+      "checksum": "a70d3f5f71dce50d02d846c2112fe63a"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/dist/components.min.js": {
+      "checksum": "b6db4bfecae4d61b5e20d983cd6fdba4"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/dist/components.min.js.map": {
+      "checksum": "70d0ebdc0031ce9986c2b4d8c5a3f8fe"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/dist/web-components.js": {
+      "checksum": "2a36c78ae73f0d71a8bde29dcd1b2f67"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/dist/web-components.js.map": {
+      "checksum": "32b54dc84884507e0c27610e8bb62b8c"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/dist/web-components.min.js": {
+      "checksum": "a2ff28a7d773835e5739326c6a5fda39"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/dist/web-components.min.js.map": {
+      "checksum": "8a37d599a4405a93ef466f19109b46eb"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/dist/webComponents/webComponents.min.js": {
+      "checksum": "e85f1edc605316b1bc4e8b862942f902"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/scss/accordion.scss": {
+      "checksum": "c36c8dd15af675fdc1922c6867f49dd9"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/scss/card.scss": {
+      "checksum": "2ff961818657f31c9a5dfe2f099950e3"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/scss/grid.scss": {
+      "checksum": "5931900535aff07f26029226c5860456"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/scss/input_submit_textarea.scss": {
+      "checksum": "8edec556e178430557e38875c53fa24b"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/scss/mixins/_mixins.scss": {
+      "checksum": "fa3179d6224ec29b2a6682e1b965ca7f"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/scss/nav_spacer.scss": {
+      "checksum": "efb5c329dfd6d8b84b0c15f3c482865d"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/scss/page_fillable.scss": {
+      "checksum": "5c2f9982d9e54c6fbe5ca93b1a294341"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/scss/page_navbar.scss": {
+      "checksum": "fa7b480a000d24299fde710ff17490ad"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/scss/page_sidebar.scss": {
+      "checksum": "c8e55e7dbb9c101500f98ad0d26e2ecc"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/scss/sidebar.scss": {
+      "checksum": "04b3e49af851d57e323811b1da111c50"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/scss/toast.scss": {
+      "checksum": "8767a1172836ad9c75de5029c4692eb4"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/scss/value_box.scss": {
+      "checksum": "da6401de4c00d4cf498c605f99f7d9ed"
+    },
+    "_site/site_libs/bslib-tag-require-0.10.0/tag-require.js": {
+      "checksum": "b73cab5df5e3e56f7aad1f23cf0f4674"
+    },
     "_site/site_libs/clipboard/clipboard.min.js": {
       "checksum": "15f52a1ee547f2bdd46e56747332ca2d"
+    },
+    "_site/site_libs/htmltools-fill-0.5.9/fill.css": {
+      "checksum": "0c307b2ce7a3fa7f260a0451457c809f"
     },
     "_site/site_libs/quarto-dashboard/components.js": {
       "checksum": "ac49ebff39666f27f4631a3914841683"
@@ -2766,7 +2973,7 @@
       "checksum": "bb16b7e73be13eba97c99d25b2a476b3"
     },
     ".claude/settings.local.json": {
-      "checksum": "39dafdb4b7e24d6728e931d935f0f5b0"
+      "checksum": "e3610fe811676eea7a7f8af04be2d9a0"
     },
     ".posit/publish/biSPCharts Analytics-VU16.toml": {
       "checksum": "726cbeb280374e16c0781f2c963a25ee"
@@ -2796,7 +3003,7 @@
       "checksum": "35210018470708528f9d0d4703570e09"
     },
     "index.qmd": {
-      "checksum": "25edcd0d50ae335c1d4f3dde1cbc684f"
+      "checksum": "8a122a1e625c164d2309c88ea3754e0c"
     },
     "R/data_load.R": {
       "checksum": "1d171bdb15d4edcae8b340a39920e253"
